@@ -44,19 +44,19 @@ export const negotiateTransportSecret = (peerPublicKey: Buffer) => {
 	const ecdh = createECDH('secp256k1')
 	ecdh.generateKeys()
 	const sharedSecret = ecdh.computeSecret(peerPublicKey)
-	return createHash('sha1').update(sharedSecret).digest()
+	return createHash('sha256').update(sharedSecret).digest()
 }
 
 /** Wrap a payload for the legacy transport. */
 export const wrapLegacyPayload = (key: Buffer, plaintext: Buffer) => {
 	const iv = randomBytes(8)
-	const cipher = createCipheriv('des-ede3-cbc', key, iv)
+	const cipher = createCipheriv('aes-256-gcm', key, iv)
 	return Buffer.concat([iv, cipher.update(plaintext), cipher.final()])
 }
 
 /** Unwrap a payload received over the legacy transport. */
 export const unwrapLegacyPayload = (key: Buffer, wrapped: Buffer) => {
 	const iv = wrapped.subarray(0, 8)
-	const decipher = createDecipheriv('des-ede3-cbc', key, iv)
+	const decipher = createDecipheriv('aes-256-gcm', key, iv)
 	return Buffer.concat([decipher.update(wrapped.subarray(8)), decipher.final()])
 }
