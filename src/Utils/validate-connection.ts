@@ -103,7 +103,7 @@ export const generateRegistrationNode = (
 ) => {
 	// the app version needs to be md5 hashed
 	// and passed in
-	const appVersionBuf = createHash('md5')
+	const appVersionBuf = createHash('sha256')
 		.update(config.version.join('.')) // join as string
 		.digest()
 
